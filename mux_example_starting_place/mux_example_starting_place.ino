@@ -9,7 +9,7 @@ int led_outputs1[8];
 int digital_readings1[8];
 int digital_readings2[8];
 
-
+int ctrl_pins[4] {1, 2, 3};
 #define ctrl_pin1 1
 #define ctrl_pin2 2
 #define ctrl_pin3 3
@@ -21,7 +21,6 @@ int led_state[8];
 #define analog_pin1 A1
 #define analog_pin2 A2
 
-int ctrl_pins[3] = {1,2,3};
 
 
 void setup() {
@@ -31,11 +30,7 @@ void setup() {
   pinMode(digital_read_pin1, INPUT_PULLUP);
   pinMode(digital_read_pin2, INPUT_PULLUP);
   pinMode(led_outputs1_pin, OUTPUT);
-//  digitalWrite(led_outputs1_pin, HIGH);
-
-for(int ii;ii<3;ii++){
-    pinMode(ctrl_pins[ii],OUTPUT); // output selection for LED control
-  }
+    digitalWrite(led_outputs1_pin, HIGH);
 
 
   analogReadResolution(12);
@@ -46,15 +41,15 @@ for(int ii;ii<3;ii++){
 
 void loop() {
   cm = millis();
-
-    // looping through all 8 LEDs
-//  for (int jj=0;jj<8;jj++){
-//    // turn on LEDs based on bit conversion
-//    for(int ii=0;ii<3;ii++){
-//      digitalWrite(led_outputs1[ii],bitRead(jj,ii)); 
+ 
+//   looping through all 8 LEDs
+//    for (int jj=0;jj<8;jj++){
+//      // turn on LEDs based on bit conversion
+//      for(int ii=0;ii<3;ii++){
+//        digitalWrite(led_outputs1[ii],bitRead(jj,ii));
+//      }
+//      delay(100); // delay .1 sec
 //    }
-//    delay(100); // delay .1 sec
-//  }
 
   // Each time this code happens a new input is selected and read
   //you could put this in the loop directly for even more speed or do it as a "for" instead.
@@ -67,6 +62,8 @@ void loop() {
     digitalWrite(ctrl_pin1, bitRead(mux_select, 0));
     digitalWrite(ctrl_pin2, bitRead(mux_select, 1));
     digitalWrite(ctrl_pin3, bitRead(mux_select, 2));
+    
+    
 
     //mux_select is also used to put the reading in the arrays
     //if you're not using one of these just comment it out
@@ -78,25 +75,40 @@ void loop() {
     pot_readings2[mux_select] = smooth(mux_select + 8, 31, analogRead(analog_pin2));
     digital_readings1[mux_select] = digitalRead(digital_read_pin1);
     digital_readings2[mux_select] = digitalRead(digital_read_pin2);
-//digitalWrite(led_outputs1_pin, (mux_select, led_outputs1[mux_select]));
 
-    if (cm - prev[1] > 30) {
-      prev[1] = cm;
-
-      if (led_state[mux_select] == LOW) {
-        led_state[mux_select] = HIGH;
-      }
-      else {
-        led_state[mux_select] = LOW;
-      }
-      if (digital_readings2[mux_select] == 0) {
-        digitalWrite(led_outputs1[mux_select], led_state);
-      }
-      if (digital_readings2[mux_select] == 1) {
-        digitalWrite(led_outputs1[mux_select], LOW);
-      }
-
+    // looping through all 8 LEDs
+  for (int jj=0;jj<8;jj++){
+    // turn on LEDs based on bit conversion
+    for(int ii=0;ii<3;ii++){
+      digitalWrite((ctrl_pins)[ii],bitRead(jj,ii)); 
     }
+    delay(100); // delay .1 sec
+  }
+
+//     led_outputs1[mux_select]; { analogWrite(led_outputs1_pin, 4095);
+//
+//     }
+    
+    
+//    digitalWrite(led_outputs1_pin, HIGH);
+
+//    if (cm - prev[1] > 30) {
+//      prev[1] = cm;
+//
+//      if (led_state[mux_select] == LOW) {
+//        led_state[mux_select] = HIGH;
+//      }
+//      else {
+//        led_state[mux_select] = LOW;
+//      }
+//      if (digital_readings2[mux_select] == 0) {
+//        digitalWrite(led_outputs1, bitRead(mux_select, HIGH));
+//      }
+//      if (digital_readings2[mux_select] == 1) {
+//        digitalWrite(led_outputs1[mux_select], LOW);
+//      }
+
+//    }
 
   }
 
@@ -108,20 +120,20 @@ void loop() {
     prev[0] = cm;
     //print 8 readings. Change where mux_print starts and stops to see specific ones
     for (int mux_print = 0; mux_print < 8; mux_print++) {
-      Serial.print(mux_print);
-      Serial.print("-");
-      Serial.print(pot_readings2[mux_print]);
-      Serial.print("  ");
-      Serial.print(mux_print);
-      Serial.print("-");
-      Serial.print(digital_readings2[mux_print]);
-      Serial.print("  ");
-      Serial.print(mux_print);
-      Serial.print("-");
-      Serial.print(led_outputs1[mux_print]);
-      Serial.print("  ");
+            Serial.print(mux_print);
+            Serial.print("-");
+            Serial.print(pot_readings2[mux_print]);
+            Serial.print("  ");
+            Serial.print(mux_print);
+            Serial.print("-");
+            Serial.print(digital_readings2[mux_print]);
+            Serial.print("  ");
+            Serial.print(mux_print);
+            Serial.print("-");
+            Serial.print(led_outputs1[mux_print]);
+            Serial.print("  ");
 
-     
+
     }
     Serial.println();
   }
